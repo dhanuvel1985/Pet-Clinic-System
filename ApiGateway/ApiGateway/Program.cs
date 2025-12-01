@@ -96,33 +96,7 @@ builder.Services.AddOpenTelemetry()
 // -----------------------------------------------------------------------------
 // Authentication (JWT) - Gateway validates tokens centrally
 // -----------------------------------------------------------------------------
-//var jwtAuthority = builder.Configuration["Jwt:Authority"];
-//var jwtAudience = builder.Configuration["Jwt:Audience"];
-
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//    .AddJwtBearer(options =>
-//    {
-//        // Minimal validation here; tune TokenValidationParameters as needed for prod
-//        options.Authority = jwtAuthority;
-//        options.Audience = jwtAudience;
-//        options.RequireHttpsMetadata = builder.Configuration.GetValue<bool?>("Jwt:RequireHttpsMetadata") ?? true;
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = true,
-//            ValidateAudience = true,
-//            ValidateLifetime = true
-//            // You may configure additional validation (IssuerSigningKey, ClockSkew, etc.)
-//        };
-//    });
-
-//builder.Services.AddAuthentication()
-//    .AddJwtBearer("Bearer", options =>
-//    {
-//        options.Authority = "https://localhost:7061";
-//        options.Audience = "pet_api";
-//        options.RequireHttpsMetadata = false;
-//    });
-
+var config = builder.Configuration.GetSection("Jwt");
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = "Bearer";
@@ -131,20 +105,20 @@ builder.Services.AddAuthentication(options =>
 .AddJwtBearer("Bearer", options =>
 {
     options.RequireHttpsMetadata = false;
-    options.Authority = "https://localhost:7061";
-    options.Audience = "pet_api";
+    options.Authority = config["Issuer"];
+    options.Audience = config["Audience"];
 
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = "https://localhost:7061",
+        ValidIssuer = config["Issuer"],
 
         ValidateAudience = true,
-        ValidAudience = "pet_api",
+        ValidAudience = config["Audience"],
 
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("SuperSecretJwtKey123!trainingdemo@12345$SuperSecretJwtKey123!trainingdemo@12345$")),
+                Encoding.UTF8.GetBytes(config["Secret"])),
 
         ValidateLifetime = true,
         ClockSkew = TimeSpan.FromMinutes(2)
