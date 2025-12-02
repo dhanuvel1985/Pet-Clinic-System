@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
+using Shared.Resilience;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,20 +38,26 @@ builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddHttpContextAccessor();
 
 //builder.Services.AddScoped<IUserServiceClient, UserServiceClient>();
+var serviceUrl = builder.Configuration.GetSection("Services");
 builder.Services.AddHttpClient<IPetServiceClient, PetServiceClient>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7177"); // API Gateway
+    client.BaseAddress = new Uri(serviceUrl["PetServiceUrl"]); // API Gateway
 })
+.AddPolicyHandler(PollyPolicies.GetRetryPolicy())
+.AddPolicyHandler(PollyPolicies.GetCircuitBreakerPolicy())
 .ConfigurePrimaryHttpMessageHandler(() =>
         new HttpClientHandler
         {
             ServerCertificateCustomValidationCallback =
                 HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 }); 
+
 builder.Services.AddHttpClient<IUserServiceClient, UserServiceClient>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5059"); // API Gateway
+    client.BaseAddress = new Uri(serviceUrl["UserServiceUrl"]); // API Gateway
 })
+.AddPolicyHandler(PollyPolicies.GetRetryPolicy())
+.AddPolicyHandler(PollyPolicies.GetCircuitBreakerPolicy())
 .ConfigurePrimaryHttpMessageHandler(() =>
         new HttpClientHandler
         {
