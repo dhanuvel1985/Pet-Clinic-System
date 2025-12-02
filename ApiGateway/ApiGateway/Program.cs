@@ -1,18 +1,3 @@
-// Program.cs - ApiGateway (Full production-ready)
-// .NET 8 minimal hosting model
-// Requires NuGet packages:
-// - Ocelot
-// - Serilog.AspNetCore
-// - Serilog.Enrichers.CorrelationId
-// - CorrelationId
-// - CorrelationId.Abstractions
-// - AspNetCoreRateLimit
-// - OpenTelemetry.Extensions.Hosting
-// - OpenTelemetry.Exporter.OpenTelemetryProtocol
-// - OpenTelemetry.Instrumentation.AspNetCore
-// - OpenTelemetry.Instrumentation.Http
-// - Microsoft.AspNetCore.Authentication.JwtBearer
-
 using AspNetCoreRateLimit;
 using CorrelationId;
 using CorrelationId.Abstractions;
@@ -213,9 +198,6 @@ app.Use(async (context, next) =>
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Health endpoints on gateway (use for gateway liveness)
-app.MapHealthChecks("/health/live");
-app.MapHealthChecks("/health/ready");
 // Enable controller routing BEFORE Ocelot
 app.MapControllers();
 
