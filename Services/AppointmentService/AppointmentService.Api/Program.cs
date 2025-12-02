@@ -39,7 +39,7 @@ builder.Services.AddHttpContextAccessor();
 //builder.Services.AddScoped<IUserServiceClient, UserServiceClient>();
 builder.Services.AddHttpClient<IPetServiceClient, PetServiceClient>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5059"); // API Gateway
+    client.BaseAddress = new Uri("https://localhost:7177"); // API Gateway
 })
 .ConfigurePrimaryHttpMessageHandler(() =>
         new HttpClientHandler
@@ -79,7 +79,11 @@ builder.Host.UseSerilog((context, services, configuration) =>
 
 // 6. Auth
 var config = builder.Configuration.GetSection("Jwt");
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "Bearer";
+    options.DefaultChallengeScheme = "Bearer";
+})
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -96,10 +100,29 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
             ValidateLifetime = true
         };
-        options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+        //options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+        //{
+        //    OnAuthenticationFailed = ctx => {
+        //        Console.WriteLine("JWT ERROR: " + ctx.Exception?.Message);
+        //        return Task.CompletedTask;
+        //    }
+        //};
+        options.Events = new JwtBearerEvents
         {
-            OnAuthenticationFailed = ctx => {
-                Console.WriteLine("JWT ERROR: " + ctx.Exception?.Message);
+            OnMessageReceived = ctx =>
+            {
+                Console.WriteLine("Gateway OnMessageReceived token: " + ctx.Token);
+                return Task.CompletedTask;
+            },
+            OnAuthenticationFailed = ctx =>
+            {
+                Console.WriteLine("Gateway JWT FAILED: " + ctx.Exception?.Message);
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = ctx =>
+            {
+                Console.WriteLine("Gateway token valid. Claims: " +
+                    string.Join(", ", ctx.Principal.Claims.Select(c => c.Type + "=" + c.Value)));
                 return Task.CompletedTask;
             }
         };

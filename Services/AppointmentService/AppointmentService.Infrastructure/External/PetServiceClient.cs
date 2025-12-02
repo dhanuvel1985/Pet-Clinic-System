@@ -30,17 +30,23 @@ namespace AppointmentService.Infrastructure.External
                             .Request
                             .Headers["Authorization"]
                             .ToString();
+
+            Console.WriteLine("Incoming Authorization: " + token);
+
             var request = new HttpRequestMessage(HttpMethod.Get, $"/api/v1/pets/{petId}");
             if (!string.IsNullOrEmpty(token))
-            {
-                var jwt = token.StartsWith("Bearer ") ? token.Substring(7) : token;
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
-            }
+                request.Headers.Add("Authorization", token);
 
             var response = await _http.SendAsync(request);
 
-            //var response = await _http.GetAsync($"api/v1/pets/{petId}");
+            response.EnsureSuccessStatusCode();
+
             return response.IsSuccessStatusCode;
+
+            //var response = await _http.SendAsync(request);
+
+            ////var response = await _http.GetAsync($"api/v1/pets/{petId}");
+            //return response.IsSuccessStatusCode;
         }
     }
 

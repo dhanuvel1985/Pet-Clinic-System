@@ -30,9 +30,9 @@ namespace AppointmentService.Application.Commands
 
         public async Task<Appointment> Handle(CreateAppointmentCommand cmd)
         {
-            //var petExists = await _petService.PetExists(cmd.PetId);
-            //if (!petExists)
-              //  throw new Exception("Pet does not exist. Cannot create Appointment.");
+            var petexists = await _petService.PetExists(cmd.PetId);
+            if (!petexists)
+                throw new Exception("pet does not exist. cannot create appointment.");
 
             var userExists = await _userServiceClient.UserExists(cmd.UserId);
             if (!userExists)
