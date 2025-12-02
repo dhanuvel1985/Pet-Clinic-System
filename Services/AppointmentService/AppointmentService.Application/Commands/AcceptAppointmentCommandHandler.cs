@@ -34,7 +34,7 @@ namespace AppointmentService.Application.Commands
 
             appointment.Status = AppointmentStatus.Accepted;
 
-            await _repo.UpdateAsync(appointment);
+            await _repo.UpdateAsync(appointmentId);
 
             return appointment;
         }

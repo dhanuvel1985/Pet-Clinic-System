@@ -32,8 +32,14 @@ namespace AppointmentService.Infrastructure.Repositories
             return await _db.Appointments.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<Appointment> UpdateAsync(Appointment appointment)
+        public async Task<Appointment> UpdateAsync(Guid appointmentId)
         {
+            var appointment = await _db.Appointments.FindAsync(appointmentId);
+
+            if (appointment == null)
+                throw new KeyNotFoundException("Appointment not found");
+
+            appointment.Status = AppointmentStatus.Accepted;
             _db.Appointments.Update(appointment);
             await _db.SaveChangesAsync();
             return appointment;
@@ -56,7 +62,8 @@ namespace AppointmentService.Infrastructure.Repositories
                             UserId = p.UserId,
                             PetId = p.PetId,
                             PreferredDate = p.PreferredDate,
-                            Reason = p.Reason
+                            Reason = p.Reason,
+                            Status = p.Status
                         })
                         .Skip((page - 1) * pageSize)
                         .Take(pageSize)

@@ -52,7 +52,11 @@ internal class Program
 
         // 6. Auth
         var config = builder.Configuration.GetSection("Jwt");
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = "Bearer";
+            options.DefaultChallengeScheme = "Bearer";
+        })
             .AddJwtBearer(options =>
             {
                 options.RequireHttpsMetadata = config.GetValue<bool>("RequireHttpsMetadata");

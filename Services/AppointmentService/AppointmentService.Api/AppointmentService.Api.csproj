@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Shared.Resilience\Shared.Resilience.csproj" />
     <ProjectReference Include="..\AppointmentService.Application\AppointmentService.Application.csproj" />
     <ProjectReference Include="..\AppointmentService.Infrastructure\AppointmentService.Infrastructure.csproj" />
   </ItemGroup>

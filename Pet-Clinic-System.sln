@@ -55,6 +55,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppointmentService.Infrastr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppointmentService.Tests", "Services\AppointmentService\AppointmentService.Tests\AppointmentService.Tests.csproj", "{FB63E239-70DD-490D-9FA3-DA4759FF6B0B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Resilience", "Shared\Shared.Resilience\Shared.Resilience.csproj", "{5D53B0E1-2936-4D6C-B287-59C0A912A6E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -133,6 +135,10 @@ Global
 		{FB63E239-70DD-490D-9FA3-DA4759FF6B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB63E239-70DD-490D-9FA3-DA4759FF6B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB63E239-70DD-490D-9FA3-DA4759FF6B0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D53B0E1-2936-4D6C-B287-59C0A912A6E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D53B0E1-2936-4D6C-B287-59C0A912A6E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D53B0E1-2936-4D6C-B287-59C0A912A6E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D53B0E1-2936-4D6C-B287-59C0A912A6E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -160,6 +166,7 @@ Global
 		{71730FC1-A3A5-4C8A-89B2-39C2E42BFF11} = {8791FD66-6A5D-4AEE-88A1-CECD7B59EAFF}
 		{C7061C86-BAB7-44E1-895B-47ADD5BFC1DB} = {8791FD66-6A5D-4AEE-88A1-CECD7B59EAFF}
 		{FB63E239-70DD-490D-9FA3-DA4759FF6B0B} = {8791FD66-6A5D-4AEE-88A1-CECD7B59EAFF}
+		{5D53B0E1-2936-4D6C-B287-59C0A912A6E3} = {EFC9EDDB-618F-4573-AB10-0DDFC256FABB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5DA6540F-C126-43D9-A692-A4EB705D1473}

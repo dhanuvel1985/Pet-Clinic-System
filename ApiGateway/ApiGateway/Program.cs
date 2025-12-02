@@ -1,18 +1,3 @@
-// Program.cs - ApiGateway (Full production-ready)
-// .NET 8 minimal hosting model
-// Requires NuGet packages:
-// - Ocelot
-// - Serilog.AspNetCore
-// - Serilog.Enrichers.CorrelationId
-// - CorrelationId
-// - CorrelationId.Abstractions
-// - AspNetCoreRateLimit
-// - OpenTelemetry.Extensions.Hosting
-// - OpenTelemetry.Exporter.OpenTelemetryProtocol
-// - OpenTelemetry.Instrumentation.AspNetCore
-// - OpenTelemetry.Instrumentation.Http
-// - Microsoft.AspNetCore.Authentication.JwtBearer
-
 using AspNetCoreRateLimit;
 using CorrelationId;
 using CorrelationId.Abstractions;
@@ -96,33 +81,7 @@ builder.Services.AddOpenTelemetry()
 // -----------------------------------------------------------------------------
 // Authentication (JWT) - Gateway validates tokens centrally
 // -----------------------------------------------------------------------------
-//var jwtAuthority = builder.Configuration["Jwt:Authority"];
-//var jwtAudience = builder.Configuration["Jwt:Audience"];
-
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//    .AddJwtBearer(options =>
-//    {
-//        // Minimal validation here; tune TokenValidationParameters as needed for prod
-//        options.Authority = jwtAuthority;
-//        options.Audience = jwtAudience;
-//        options.RequireHttpsMetadata = builder.Configuration.GetValue<bool?>("Jwt:RequireHttpsMetadata") ?? true;
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = true,
-//            ValidateAudience = true,
-//            ValidateLifetime = true
-//            // You may configure additional validation (IssuerSigningKey, ClockSkew, etc.)
-//        };
-//    });
-
-//builder.Services.AddAuthentication()
-//    .AddJwtBearer("Bearer", options =>
-//    {
-//        options.Authority = "https://localhost:7061";
-//        options.Audience = "pet_api";
-//        options.RequireHttpsMetadata = false;
-//    });
-
+var config = builder.Configuration.GetSection("Jwt");
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = "Bearer";
@@ -131,20 +90,20 @@ builder.Services.AddAuthentication(options =>
 .AddJwtBearer("Bearer", options =>
 {
     options.RequireHttpsMetadata = false;
-    options.Authority = "https://localhost:7061";
-    options.Audience = "pet_api";
+    options.Authority = config["Issuer"];
+    options.Audience = config["Audience"];
 
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = "https://localhost:7061",
+        ValidIssuer = config["Issuer"],
 
         ValidateAudience = true,
-        ValidAudience = "pet_api",
+        ValidAudience = config["Audience"],
 
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("SuperSecretJwtKey123!trainingdemo@12345$SuperSecretJwtKey123!trainingdemo@12345$")),
+                Encoding.UTF8.GetBytes(config["Secret"])),
 
         ValidateLifetime = true,
         ClockSkew = TimeSpan.FromMinutes(2)
@@ -239,9 +198,6 @@ app.Use(async (context, next) =>
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Health endpoints on gateway (use for gateway liveness)
-app.MapHealthChecks("/health/live");
-app.MapHealthChecks("/health/ready");
 // Enable controller routing BEFORE Ocelot
 app.MapControllers();
 
