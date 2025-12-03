@@ -15,7 +15,7 @@ namespace AppointmentService.Infrastructure
             var builder = new DbContextOptionsBuilder<AppointmentDbContext>();
 
             builder.UseSqlServer(
-                "Server=localhost,1433;Database=AppointmentDb;User Id=sa;Password=StrongPass@1234;TrustServerCertificate=True;");
+                "Server=localhost,1433;Database=AppointmentDb;User Id=sa;Password=YourStrong@1234;TrustServerCertificate=True;");
 
             return new AppointmentDbContext(builder.Options);
         }

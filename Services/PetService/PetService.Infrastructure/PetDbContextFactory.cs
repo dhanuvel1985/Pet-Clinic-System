@@ -17,7 +17,7 @@ namespace PetService.Infrastructure
 
             // Same connection string used by your API
             optionsBuilder.UseSqlServer(
-                "Server=localhost,1433;Database=PetDb;User Id=sa;Password=StrongPass@1234;TrustServerCertificate=True;"
+                "Server=localhost,1433;Database=PetDb;User Id=sa;Password=YourStrong@1234;TrustServerCertificate=True;"
             );
 
             return new PetDbContext(optionsBuilder.Options);

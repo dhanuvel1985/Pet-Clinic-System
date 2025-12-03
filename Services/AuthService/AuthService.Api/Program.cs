@@ -1,10 +1,9 @@
-
-
-using AuthService.Api.Domain.Entities;
-using AuthService.Api.Infrastructure;
 using AuthService.Api.Middlewares;
-using AuthService.Api.Repositories;
-using AuthService.Api.Services;
+using AuthService.Application.Commands;
+using AuthService.Application.Interfaces;
+using AuthService.Domain.Entities;
+using AuthService.Infrastructure;
+using AuthService.Infrastructure.Repositories;
 using CorrelationId;
 using CorrelationId.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -47,7 +46,12 @@ builder.Services.AddDbContext<AuthDbContext>(opts => opts.UseSqlServer(conn,
 
 // --- Repositories & services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(RegisterCommand).Assembly);
+});
 
 // Password hasher (from Microsoft.AspNetCore.Identity)
 builder.Services.AddSingleton<Microsoft.AspNetCore.Identity.IPasswordHasher<User>,

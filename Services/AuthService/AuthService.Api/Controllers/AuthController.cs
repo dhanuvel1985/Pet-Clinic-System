@@ -1,7 +1,7 @@
-﻿using AuthService.Api.Domain.Entities;
-using AuthService.Api.DTOs;
-using AuthService.Api.Repositories;
-using AuthService.Api.Services;
+﻿using AuthService.Application.Commands;
+using AuthService.Application.Interfaces;
+using AuthService.Application.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,77 +12,47 @@ namespace AuthService.Api.Controllers
     [Route("api/v1/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly IUserRepository _users;
-        private readonly ITokenService _tokenService;
-        private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IMediator _mediator;
 
-        public AuthController(IUserRepository users, ITokenService tokenService, IPasswordHasher<User> passwordHasher)
+        public AuthController(IMediator mediator)
         {
-            _users = users;
-            _tokenService = tokenService;
-            _passwordHasher = passwordHasher;
+            _mediator = mediator;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest req)
+        public async Task<IActionResult> Register([FromBody] RegisterCommand command)
         {
-            var existing = await _users.GetByEmailAsync(req.Email);
-            if (existing != null) return Problem(statusCode: 400, title: "User already exists");
-
-            var user = new User { Email = req.Email, RoleId = req.Role };
-            //user.PasswordHash = _passwordHasher.HashPassword(user, req.Password);
-
-            await _users.AddAsync(user);
-
-            // create tokens
-            var (access, refresh) = await _tokenService.GenerateTokensAsync(user);
-
-            return Created(string.Empty, new TokenResponse { AccessToken = access, RefreshToken = refresh.Token, RefreshTokenExpiresAt = refresh.ExpiresAt });
+            var result = await _mediator.Send(command);
+            return Created(string.Empty, result);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest req)
+        public async Task<IActionResult> Login([FromBody] LoginCommand command)
         {
-            var user = await _users.GetByEmailAsync(req.Email);
-            if (user == null) return Unauthorized();
-
-            //var verify = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, req.Password);
-            //if (verify == PasswordVerificationResult.Failed) return Unauthorized();
-
-            var (access, refresh) = await _tokenService.GenerateTokensAsync(user);
-
-            return Ok(new TokenResponse { AccessToken = access, RefreshToken = refresh.Token, RefreshTokenExpiresAt = refresh.ExpiresAt });
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] string refreshToken)
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenCommand command)
         {
-            var rt = await _users.GetRefreshTokenAsync(refreshToken);
-            if (rt == null || rt.IsRevoked || rt.ExpiresAt < DateTime.UtcNow) return Unauthorized();
-
-            var user = rt.User!;
-            // revoke old refresh token and issue a new one (rotate)
-            await _users.RevokeRefreshTokenAsync(rt);
-
-            var (access, newRt) = await _tokenService.GenerateTokensAsync(user);
-            return Ok(new TokenResponse { AccessToken = access, RefreshToken = newRt.Token, RefreshTokenExpiresAt = newRt.ExpiresAt });
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
         [HttpPost("revoke")]
-        public async Task<IActionResult> Revoke([FromBody] string refreshToken)
+        public async Task<IActionResult> Revoke([FromBody] RevokeTokenCommand command)
         {
-            var rt = await _users.GetRefreshTokenAsync(refreshToken);
-            if (rt == null) return NotFound();
-
-            await _users.RevokeRefreshTokenAsync(rt);
+            await _mediator.Send(command);
             return NoContent();
         }
 
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetUserById(Guid id)
         {
-            var user = await _users.GetByIdAsync(id);
-            return Ok(user);
+            var result = await _mediator.Send(new GetUserByIdQuery(id));
+            return Ok(result);
         }
     }
+
 }

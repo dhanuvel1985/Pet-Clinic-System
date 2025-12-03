@@ -13,7 +13,7 @@ namespace ConsultationService.Infrastructure
         public ConsultationDbContext CreateDbContext(string[] args)
         {
             var options = new DbContextOptionsBuilder<ConsultationDbContext>()
-                .UseSqlServer("Server=localhost,1433;Database=ConsultationDb;User Id=sa;Password=StrongPass@1234;TrustServerCertificate=True;")
+                .UseSqlServer("Server=localhost,1433;Database=ConsultationDb;User Id=sa;Password=YourStrong@1234;TrustServerCertificate=True;")
                 .Options;
 
             return new ConsultationDbContext(options);
