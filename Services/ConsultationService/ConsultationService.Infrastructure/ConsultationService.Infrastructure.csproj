@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ConsultationService.Application\ConsultationService.Application.csproj" />
     <ProjectReference Include="..\ConsultationService.Domain\ConsultationService.Domain.csproj" />
   </ItemGroup>
 

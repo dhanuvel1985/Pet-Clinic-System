@@ -11,6 +11,7 @@ namespace ConsultationService.Application.Commands
     {
         public Guid PetId { get; set; }
         public Guid VetId { get; set; }
+        public Guid AppointmentId { get; set; }
         public DateTime ConsultationDate { get; set; }
         public string Symptoms { get; set; }
         public string Diagnosis { get; set; }

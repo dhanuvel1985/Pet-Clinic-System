@@ -29,8 +29,6 @@ builder.Services.AddDbContext<AppointmentDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-
 //builder.Services.AddHttpClient<IPetServiceClient, PetServiceClient>();
 
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
