@@ -133,19 +133,6 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-// 7. OpenTelemetry
-builder.Services.AddOpenTelemetry()
-    .WithTracing(t =>
-    {
-        t.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("AppointmentService"))
-         .AddAspNetCoreInstrumentation()
-         .AddHttpClientInstrumentation()
-         .AddOtlpExporter(o =>
-         {
-             o.Endpoint = new Uri(builder.Configuration["OpenTelemetry:Endpoint"]);
-         });
-    });
-
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();

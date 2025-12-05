@@ -84,19 +84,6 @@ internal class Program
                 };
             });
 
-        // 7. OpenTelemetry
-        builder.Services.AddOpenTelemetry()
-            .WithTracing(t =>
-            {
-                t.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("PetService"))
-                 .AddAspNetCoreInstrumentation()
-                 .AddHttpClientInstrumentation()
-                 .AddOtlpExporter(o =>
-                 {
-                     o.Endpoint = new Uri(builder.Configuration["OpenTelemetry:Endpoint"]);
-                 });
-            });
-
         // 8. Controllers
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
@@ -118,12 +105,6 @@ internal class Program
         app.UseAuthorization();
         app.UseHttpsRedirection();
         app.MapControllers();
-
-        app.Use(async (ctx, next) =>
-        {
-            Console.WriteLine("AUTH HEADER => " + ctx.Request.Headers["Authorization"]);
-            await next();
-        });
 
         app.Run();
     }

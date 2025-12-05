@@ -16,7 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -30,7 +29,6 @@ builder.Services.AddScoped<IConsultationRepository, ConsultationRepository>();
 
 builder.Services.AddHttpContextAccessor();
 
-//builder.Services.AddScoped<IUserServiceClient, UserServiceClient>();
 var serviceUrl = builder.Configuration.GetSection("Services");
 builder.Services.AddHttpClient<IPetServiceClient, PetServiceClient>(client =>
 {
@@ -98,13 +96,6 @@ builder.Services.AddAuthentication(options =>
 
             ValidateLifetime = true
         };
-        //options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
-        //{
-        //    OnAuthenticationFailed = ctx => {
-        //        Console.WriteLine("JWT ERROR: " + ctx.Exception?.Message);
-        //        return Task.CompletedTask;
-        //    }
-        //};
         options.Events = new JwtBearerEvents
         {
             OnMessageReceived = ctx =>

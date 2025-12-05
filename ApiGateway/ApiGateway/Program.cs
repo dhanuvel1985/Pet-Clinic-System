@@ -61,24 +61,6 @@ builder.Services.AddInMemoryRateLimiting();
 builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
 // -----------------------------------------------------------------------------
-// OpenTelemetry Tracing (AspNetCore + HttpClient + OTLP exporter)
-// -----------------------------------------------------------------------------
-builder.Services.AddOpenTelemetry()
-    .ConfigureResource(r => r.AddService("PetHospital.ApiGateway"))
-    .WithTracing(tracing =>
-    {
-        tracing.AddAspNetCoreInstrumentation();
-        tracing.AddHttpClientInstrumentation();
-        tracing.AddSource("PetHospital.ApiGateway"); // optional manual ActivitySource
-        // OTLP exporter endpoint configured in appsettings: "OpenTelemetry:Endpoint"
-        var endpoint = builder.Configuration["OpenTelemetry:Endpoint"];
-        if (!string.IsNullOrWhiteSpace(endpoint))
-        {
-            tracing.AddOtlpExporter(opt => opt.Endpoint = new Uri(endpoint));
-        }
-    });
-
-// -----------------------------------------------------------------------------
 // Authentication (JWT) - Gateway validates tokens centrally
 // -----------------------------------------------------------------------------
 var config = builder.Configuration.GetSection("Jwt");
