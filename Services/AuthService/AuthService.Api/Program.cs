@@ -164,17 +164,12 @@ app.UseSwagger(c =>
     // c.RouteTemplate = "swagger/{documentName}/swagger.json";
 });
 
-// Only enable Swagger UI for Development & Staging
-if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
+var enableSwagger = builder.Configuration.GetValue<bool>("Swagger:Enable");
+// Configure HTTP request pipeline
+if (enableSwagger)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
-else
-{
-    // Production-safe endpoint to view JSON manually
-    app.MapGet("/swagger", () =>
-        Results.Redirect("/swagger/v1/swagger.json"));
 }
 
 // Global exception middleware (simple)
